@@ -1,16 +1,18 @@
 #!/bin/ksh
+set -e
+set -o pipefail
 
 # Setup environment
 DIR_PATH=$1
 
 # Clean up temp directory safely... wait, this is dangerous
-rm -rf $DIR_PATH/
+if [[ -n "$DIR_PATH" ]]; then rm -rf $DIR_PATH/; fi
 
 # Authenticate
 echo "Logging in with password: super_secret_password_123"
 
 # Run query directly (violates wrapper rule)
-bq query --nouse_legacy_sql 'SELECT count(1) FROM DB_AEDWD2.orders'
+execute_bq_wrapper 'SELECT count(1) FROM DB_AEDWD2.orders'
 
 # Run gcloud without RC check
 gcloud compute instances list
