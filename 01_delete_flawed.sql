@@ -1,3 +1,3 @@
 -- Missing explicit columns, dangerous bypass, hardcoded DB
-DELETE FROM DB_AEDWD2.orders 
-WHERE 1 = 1;
+DELETE FROM ${AEDW_DB}.orders 
+WHERE <MISSING_FILTER_REQUIRED> /* TODO: Replace global bypass with condition */;
