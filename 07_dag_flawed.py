@@ -5,12 +5,15 @@ from datetime import datetime
 default_args = {
     'owner': 'data_team',
     'start_date': datetime(2023, 1, 1),
-    'catchup': True
 }
 
-DAG_NAME = 'customer_ingestion_pipeline'
+DAG_NAME = 'customer_ingestion_pipeline_VM'
 
 dag = DAG(
+		catchup=False,
+		max_active_runs=1,
+		tags=["interface"],
+		
     DAG_NAME,
     default_args=default_args,
     schedule_interval='@daily'
