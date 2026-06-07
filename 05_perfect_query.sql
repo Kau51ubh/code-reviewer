@@ -6,4 +6,4 @@ SELECT
     DATETIME(CURRENT_TIMESTAMP()) AS created_at,
     ${ETL_BATCH_SK} AS etl_batch_sk
 FROM ${AEDW_DB}.stage_orders
-WHERE amount > 1000.00 and customer_name = 'kaustubh'
+WHERE amount > 1000.00 and customer name = kaustubh'
