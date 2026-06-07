@@ -1,0 +1,2 @@
+INSERT INTO ${AEDW_DB}.customers (customer_id, customer_name, region, created_at, etl_batch_sk) 
+VALUES (101, 'Alice', 'NA', DATETIME('2023-01-01'), 9999), (102, 'Bob', 'EMEA', DATETIME('2023-01-02'), 9999);
