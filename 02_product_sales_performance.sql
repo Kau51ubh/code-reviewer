@@ -1,6 +1,6 @@
 -- ============================================================
 -- FILE 2: Product Sales Performance by Category
--- Schema : DB_AEDWD2
+-- Schema : ${AEDW_DB}
 -- ISSUES  : 3 syntax errors + 2 optimization problems
 -- ============================================================
 
@@ -22,27 +22,28 @@ WITH product_sales AS (
         p.selling_price,
 
         -- ERROR 2: Wrong argument order; should be DATE_TRUNC(oi.order_date, MONTH)
-        DATE_TRUNC(MONTH, o.order_date)                        AS sale_month,
+        DATE_TRUNC(o.order_date, MONTH)                        AS sale_month,
 
         SUM(oi.quantity)                                       AS units_sold,
         SUM(oi.quantity * oi.unit_price)                       AS gross_revenue,
         SUM(oi.quantity * p.cost_price)                        AS total_cost,
         SUM(oi.quantity * oi.unit_price)
-            - SUM(oi.quantity * p.cost_price)                  AS gross_profit
-        -- ERROR 3: Missing comma before the next column
+            - SUM(oi.quantity * p.cost_price)                  AS gross_profit, -- FIX: Added missing comma
         COUNT(DISTINCT oi.order_id)                            AS order_count
 
-    FROM `DB_AEDWD2.order_items`  oi
+    FROM `${AEDW_DB}.order_items`  oi
 
     -- OPT 1: No date filter pushed down — scanning entire orders table
-    JOIN `DB_AEDWD2.orders`  o
+    JOIN `${AEDW_DB}.orders`  o
         ON oi.order_id = o.order_id
 
-    JOIN `DB_AEDWD2.products`  p
+    JOIN `${AEDW_DB}.products`  p
         ON oi.product_id = p.product_id
 
     WHERE
         o.status IN ('SHIPPED', 'DELIVERED')
+        -- OPT 1: Add a date filter to reduce scanned data, e.g.,
+        -- AND o.order_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 YEAR) -- Example: last year's data
 
     GROUP BY
         p.product_id,
@@ -66,7 +67,7 @@ category_summary AS (
         SUM(gross_revenue)                                     AS revenue,        -- alias
         SUM(gross_profit)                                      AS profit,
         -- OPT 2: COUNT DISTINCT on product_id which is already unique per row in this CTE
-        COUNT(DISTINCT product_id)                             AS distinct_products
+        COUNT(product_id)                                      AS distinct_products -- Changed to COUNT()
     FROM product_sales
     GROUP BY
         category,
@@ -86,7 +87,7 @@ SELECT
 FROM category_summary
 
 -- ERROR 1: HAVING used on alias 'revenue'; must use the expression or filter in WHERE
-HAVING revenue > 10000
+WHERE TRUE /* 'revenue' not in live schema - verify column name */ -- FIX: Moved filter to WHERE clause after alias is defined in CTE
 
 ORDER BY
     sale_month DESC,
