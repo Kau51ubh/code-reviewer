@@ -16,8 +16,6 @@ export REGION="us-central1"
 export JDBC_CONNECTION_URL="jdbc:sqlserver://<SQL_SERVER_IP>:1433;databaseName=<DB_NAME>"
 export JDBC_DRIVER_CLASS="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 export JDBC_DRIVER_GCS_PATH="gs://your-bucket/drivers/mssql-jdbc.jar"
-export DB_USER="your_db_user"
-export DB_PASSWORD_SECRET_NAME="sql-server-password" # Best practice: Use Secret Manager
 
 # Query to pull data
 export SQL_QUERY="SELECT * FROM your_table WHERE update_ts >= '2026-01-01'"
