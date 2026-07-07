@@ -3,4 +3,4 @@ SELECT
     order_id
     total_amount
     FROMM ${AEDW_DB}.sales
-WHERE status = 'CLOSED'
+WHERE UPPER(TRIM(status)) = UPPER('CLOSED');
