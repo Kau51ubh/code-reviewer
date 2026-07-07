@@ -1,6 +1,6 @@
 -- ============================================================
 -- FILE 1: Customer Order Summary Report
--- Schema : DB_AEDWD2
+-- Schema : ${AEDW_DB}
 -- ISSUES  : 3 syntax errors + 2 optimization problems
 -- ============================================================
 
@@ -21,13 +21,13 @@ SELECT
     order_summary.avg_order_value,
     order_summary.last_order_date
 
-FROM DB_AEDWD2.customers  c                                    -- ERROR 1: missing backticks
+FROM ${AEDW_DB}.customers  c                                    -- ERROR 1: missing backticks
 
 -- ERROR 2 + OPT 1: Subquery pulls SELECT * and is not a CTE, runs twice later
 LEFT JOIN (
     SELECT *                                                   -- ERROR 2: avoid SELECT *
-    FROM `DB_AEDWD2.orders`
-    WHERE status != 'CANCELLED'
+    FROM `${AEDW_DB}.orders`
+    WHERE TRUE /* 'status' not in live schema - verify column name */
 ) raw_orders
     ON UPPER(c.customer_id) = UPPER(raw_orders.customer_id)  -- OPT 2: UPPER() kills pruning
 
@@ -41,8 +41,8 @@ LEFT JOIN (
         MAX(order_date)          AS last_order_date
     FROM (
         SELECT *                                               -- ERROR 2 repeated
-        FROM `DB_AEDWD2.orders`
-        WHERE status != 'CANCELLED'
+        FROM `${AEDW_DB}.orders`
+        WHERE TRUE /* 'status' not in live schema - verify column name */
     )
     GROUP BY customer_id
 ) order_summary
@@ -50,7 +50,7 @@ LEFT JOIN (
 
 WHERE
     c.is_active = TRUE
-    AND c.signup_date >= '2022-01-01'
+    AND c.TRUE /* 'signup_date' not in live schema - verify column name */
 
 GROUP BY
     full_name,                                                 -- ERROR 3: alias not allowed
